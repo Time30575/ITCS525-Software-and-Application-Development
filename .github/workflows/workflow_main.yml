@@ -1,0 +1,24 @@
+name: Main Testing
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/actions-setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Upgrade pip
+        run: pip install -U pip
+
+      - name: Install dependencies
+        run: pip install fastapi uvicron[standard] asteval pytest httpx2
+
+      - name: Run pytest
+        # Runs every file start with test_ and return the result
+        run: pytest -q
