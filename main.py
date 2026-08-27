@@ -46,6 +46,8 @@ def calculate(expr: str):
     except Exception as e:
         return {"ok": False, "expr": expr, "error": str(e)}
 
+
+### Homework ADD 2 API
 ## TODO GET /hisory
 @app.get("/history")
 def get_history(limit: int = Query(50, ge=1, le=100)):

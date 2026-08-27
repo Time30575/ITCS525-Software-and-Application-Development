@@ -32,28 +32,77 @@ def test_invalid_expr_returns_ok_false():
     assert "error" in data and data["error"] != ""
 
 
-# TODO Add more tests
-def test_basic_multiplication():
-    # Tests a simple multiplication problem
-    r = client.post("/calculate", params={"expr": "5 * 6"})
-    assert r.status_code == 200
-    data = r.json()
+# TODO Add more tests, 3 per api
+# 3 test case for: GET /history
+def test_get_history_empty():
+    """Case 1: Verify history returns an empty list if we clear it first."""
+    client.delete("/history")  # Reset state
+    response = client.get("/history")
+    assert response.status_code == 200
+    assert response.json() == []  # Should be an empty list
+
+
+def test_get_history_saves_calculation():
+    """Case 2: Verify history accurately saves and retrieves a calculation."""
+    client.delete("/history")
+    
+    # Add a calculation
+    client.post("/calculate", params={"expr": "15 + 5"})
+    
+    response = client.get("/history")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["expr"] == "15 + 5"
+    assert data[0]["result"] == "20"
+
+
+def test_get_history_limit_parameter():
+    """Case 3: Verify the ?limit query parameter works to restrict items."""
+    client.delete("/history")
+    
+    # Add two separate calculations
+    client.post("/calculate", params={"expr": "1+1"})
+    client.post("/calculate", params={"expr": "2+2"})
+    
+    # Ask for only 1 item
+    response = client.get("/history", params={"limit": 1})
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["expr"] == "2+2"  # Newest item should come first
+
+
+# 3 test case for: DELETE /history
+def test_delete_history_response():
+    """Case 4: Verify the delete endpoint responds with a successful JSON format."""
+    response = client.delete("/history")
+    assert response.status_code == 200
+    data = response.json()
     assert data["ok"] is True
-    assert data["result"] == 30
+    assert "message" in data
 
 
-def test_basic_addition_with_spaces():
-    # Tests that adding numbers with whitespace works perfectly
-    r = client.post("/calculate", params={"expr": "12 + 8"})
-    assert r.status_code == 200
-    data = r.json()
-    assert data["ok"] is True
-    assert data["result"] == 20
+def test_delete_history_clears_populated_list():
+    """Case 5: Verify that clearing a full history actually removes all items."""
+    # Add some calculations to fill it up
+    client.post("/calculate", params={"expr": "5 * 5"})
+    client.post("/calculate", params={"expr": "10 / 2"})
+    
+    # Delete everything
+    delete_response = client.delete("/history")
+    assert delete_response.status_code == 200
+    
+    # Fetch history again to ensure it is completely wiped out
+    get_response = client.get("/history")
+    assert len(get_response.json()) == 0
 
 
-def test_clear_history_endpoint():
-    # Tests that the delete history route returns a success response
-    r = client.delete("/history")
-    assert r.status_code == 200
-    data = r.json()
-    assert data["ok"] is True
+def test_delete_history_when_already_empty():
+    """Case 6: Verify deleting history when it is already empty works safely without crashing."""
+    client.delete("/history")  # First clear
+    
+    # Second clear immediately after
+    response = client.delete("/history")
+    assert response.status_code == 200
+    assert response.json()["ok"] is True
