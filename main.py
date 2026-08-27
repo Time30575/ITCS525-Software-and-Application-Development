@@ -4,8 +4,7 @@ from datetime import datetime
 from fastapi import FastAPI, Query  ##Query is using with history function
 from fastapi.middleware.cors import CORSMiddleware
 from asteval import Interpreter
-from fastapi.responses import HTMLResponse ## Both using for Serve Frontend Web Files
-from fastapi.staticfiles import StaticFiles ## Both using for Serve Frontend Web Files
+from fastapi.responses import HTMLResponse, FileResponse ## Both using for Serve Frontend Web Files
 
 from calculator import expand_percent
 
@@ -65,14 +64,18 @@ def clear_history():
     return {"ok": True, "message": "History cleared successfully"}
 
 
-# ---------- Serve Frontend Web Files ----------
-# Mounts your current folder to '/static' to expose index.js and styles.css
-app.mount("/static", StaticFiles(directory="."), name="static")
+# ---------- Serve Frontend Files Directly at Root (No /static prefix) ----------
 
 @app.get("/", response_class=HTMLResponse)
 def read_index():
-    try:
-        with open("index.html", "r", encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        return "<h3>index.html file not found in current folder.</h3>"
+    return FileResponse("index.html")
+
+
+@app.get("/styles.css")
+def read_css():
+    return FileResponse("styles.css")
+
+
+@app.get("/index.js")
+def read_js():
+    return FileResponse("index.js")
