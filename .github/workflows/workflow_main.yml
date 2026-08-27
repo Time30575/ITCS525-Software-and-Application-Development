@@ -17,7 +17,7 @@ jobs:
         run: pip install -U pip
 
       - name: Install dependencies
-        run: pip install fastapi uvicron[standard] asteval pytest httpx2
+        run: pip install fastapi uvicorn[standard] asteval pytest httpx
 
       - name: Run pytest
         # Runs every file start with test_ and return the result
