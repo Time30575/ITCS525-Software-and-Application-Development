@@ -4,28 +4,28 @@ from main import app  # or whatever your app module is
 client = TestClient(app)
 
 def test_basic_division():
-    r = client.post("/calculate", params={"expr": "30/4"})
+    r = client.post("/calculate", json={"expr": "30/4"})
     assert r.status_code == 200
     data = r.json()
     assert data["ok"] is True
     assert abs(data["result"] - 7.5) < 1e-9
 
 def test_percent_subtraction():
-    r = client.post("/calculate", params={"expr": "100 - 6%"})
+    r = client.post("/calculate", json={"expr": "100 - 6%"})
     assert r.status_code == 200
     data = r.json()
     assert data["ok"] is True
     assert abs(data["result"] - 94.0) < 1e-9
 
 def test_standalone_percent():
-    r = client.post("/calculate", params={"expr": "6%"})
+    r = client.post("/calculate", json={"expr": "6%"})
     assert r.status_code == 200
     data = r.json()
     assert data["ok"] is True
     assert abs(data["result"] - 0.06) < 1e-9
 
 def test_invalid_expr_returns_ok_false():
-    r = client.post("/calculate", params={"expr": "2**(3"})
+    r = client.post("/calculate", json={"expr": "2**(3"})
     assert r.status_code == 200
     data = r.json()
     assert data["ok"] is False
@@ -47,7 +47,7 @@ def test_get_history_saves_calculation():
     client.delete("/history")
     
     # Add a calculation
-    client.post("/calculate", params={"expr": "15 + 5"})
+    client.post("/calculate", json={"expr": "15 + 5"})
     
     response = client.get("/history")
     assert response.status_code == 200
@@ -62,8 +62,8 @@ def test_get_history_limit_parameter():
     client.delete("/history")
     
     # Add two separate calculations
-    client.post("/calculate", params={"expr": "1+1"})
-    client.post("/calculate", params={"expr": "2+2"})
+    client.post("/calculate", json={"expr": "1+1"})
+    client.post("/calculate", json={"expr": "2+2"})
     
     # Ask for only 1 item
     response = client.get("/history", params={"limit": 1})
@@ -86,8 +86,10 @@ def test_delete_history_response():
 def test_delete_history_clears_populated_list():
     """Case 5: Verify that clearing a full history actually removes all items."""
     # Add some calculations to fill it up
-    client.post("/calculate", params={"expr": "5 * 5"})
-    client.post("/calculate", params={"expr": "10 / 2"})
+    # client.post("/calculate", params={"expr": "5 * 5"})   ## lec2 markdown
+    # client.post("/calculate", params={"expr": "10 / 2"})  ## lec2 markdown
+    client.post("/calculate", json={"expr": "5 * 5"})
+    client.post("/calculate", json={"expr": "10 / 2"})
     
     # Delete everything
     delete_response = client.delete("/history")
