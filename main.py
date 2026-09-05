@@ -7,6 +7,7 @@ from asteval import Interpreter
 from fastapi.responses import HTMLResponse, FileResponse ## Both using for Serve Frontend Web Files
 
 from calculator import expand_percent
+from model import Expression, CalculatorLog  ##import for lec3
 
 HISTORY_MAX = 1000
 # HISTORY (in-memory for now)
@@ -26,7 +27,10 @@ aeval = Interpreter(minimal=True, usersyms={"pi": math.pi, "e": math.e})
 
 
 @app.post("/calculate")
-def calculate(expr: str):
+##def calculate(expr: str):    ### lec2 markdown
+def calculate(expression: Expression):   ## lec3 adjust expression
+    expr = expression.expr               ## lec3 adjust expr to read it correctly
+
     try:
         code = expand_percent(expr)
         result = aeval(code)
@@ -50,7 +54,7 @@ def calculate(expr: str):
 ### Homework ADD 2 API
 ## TODO GET /hisory
 @app.get("/history")
-def get_history(limit: int = Query(50, ge=1, le=100)):
+def get_history(limit: int = Query(50, ge=1, le=100))->list[CalculatorLog]:
     """
     Returns the most recent calculation history items up to the limit.
     """
