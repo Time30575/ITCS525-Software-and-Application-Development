@@ -52,7 +52,7 @@ def calculate(expr: Expression):
 ### Homework ADD 2 API
 ## TODO GET /hisory
 @app.get("/history")
-def get_history(limit: int = Query(50, ge=1, le=100))->list(CalculatorLog):
+def get_history(limit: int = Query(50, ge=1, le=100))->list[CalculatorLog]:
     """
     Returns the most recent calculation history items up to the limit.
     """
