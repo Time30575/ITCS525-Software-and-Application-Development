@@ -27,8 +27,10 @@ aeval = Interpreter(minimal=True, usersyms={"pi": math.pi, "e": math.e})
 
 
 @app.post("/calculate")
-##def calculate(expr: str):    ### lec 2 markdown
-def calculate(expr: Expression):
+##def calculate(expr: str):    ### lec2 markdown
+def calculate(expression: Expression):   ## lec3 adjust expression
+    expr = expression.expr               ## lec3 adjust expr to read it correctly
+
     try:
         code = expand_percent(expr)
         result = aeval(code)
