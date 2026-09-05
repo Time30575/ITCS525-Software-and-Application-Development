@@ -106,3 +106,20 @@ def test_delete_history_when_already_empty():
     response = client.delete("/history")
     assert response.status_code == 200
     assert response.json()["ok"] is True
+
+
+## Lec3 update test on both new API
+def test_history_returns_calculator_logs():
+    client.delete("/history")
+
+    client.post("/calculate", json={"expr": "15 + 5"})
+
+    response = client.get("/history")
+
+    assert response.status_code == 200
+
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["expr"] == "15 + 5"
+    assert data[0]["result"] == "20"
+    assert "timestamp" in data[0]
