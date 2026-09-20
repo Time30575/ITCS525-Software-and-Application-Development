@@ -40,3 +40,7 @@ def expand_percent(expr: str) -> str:
         value = value[:match.start()] + replacement + value[match.end():]
 
     return _number_percent.sub(lambda match: f"({match.group('n')}/100)", value)
+
+### Lec 5, expand_percent as function for test_main to test.
+def get_expand_percent():
+    return expand_percent

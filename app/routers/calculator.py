@@ -2,7 +2,8 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends
 
-from app.dependencies import aeval, expand_percent, get_history
+from app.dependencies import aeval, get_expand_percent, get_history 
+## get_expand_percent is function not a value, this will make it able to test via pytest
 from app.schemas import Expression
 
 router = APIRouter()
@@ -10,7 +11,7 @@ router = APIRouter()
 ## Lec 5, now the calculate should route input from dependency file
 @router.post("/calculate")
 def calculate(expression: Expression,
-              expand_percent=Depends(expand_percent),
+              expand_percent=Depends(get_expand_percent),
               history=Depends(get_history),
               ):
     expr = expression.expr
