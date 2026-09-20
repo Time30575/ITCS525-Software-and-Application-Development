@@ -1,5 +1,9 @@
 import pytest
-from calculator import expand_percent  # import your function
+
+from app.dependencies import expand_percent  
+## Lec 5 expand_percent should only coming from dependencies file, no more expand_percent from schema.py file.
+
+
 
 def test_add_percent():
     """Test addition where B% means 'B percent of A'."""
